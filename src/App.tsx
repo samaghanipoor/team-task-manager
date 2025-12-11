@@ -1,35 +1,29 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+// import React from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+import MainLayout from "./layouts/MainLayout";
+import ProjectsList from "./pages/ProjectsList";
+import AuthLogin from "./pages/AuthLogin";
+import AuthRegister from "./pages/AuthRegister";
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <BrowserRouter>
+      <Routes>
+        {/* Protected Route می‌توان بعداً اضافه کرد */}
+        <Route
+          path="/"
+          element={
+            <MainLayout>
+              <ProjectsList />
+            </MainLayout>
+          }
+        />
+        <Route path="/login" element={<AuthLogin />} />
+        <Route path="/register" element={<AuthRegister />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
