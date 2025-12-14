@@ -45,8 +45,8 @@ export default function ProjectCard({ project, onOpen, onEdit, onDelete }: Props
       <div className="flex gap-2 mt-4">
         <button
           onClick={() => {
-            onOpen?.(project.id);       // اگر همچنان میخوای callback داشته باشی
-            navigate(`/projects/${project.id}`); // ← اینجا ناوبری انجام میشه
+            onOpen?.(project.id);       
+            navigate(`/projects/${project.id}`); 
           }}
           className="flex-1 text-sm border rounded-lg py-2 hover:bg-gray-50"
         >
