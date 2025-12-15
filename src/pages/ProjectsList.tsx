@@ -2,6 +2,8 @@ import { useState } from "react";
 import ProjectCard from "../components/project/ProjectCard";
 import ProjectModal from "../components/project/ProjectModal";
 import type { Project } from "../types/project";
+import { useNavigate } from 'react-router-dom';
+
 
 const initialProjects: Project[] = [
   { id: 1, title: "Website Redesign", description: "Redesign the company website", dueDate: "2025-12-20", status: "In Progress" },
@@ -13,9 +15,12 @@ export default function ProjectsList() {
   const [projects, setProjects] = useState<Project[]>(initialProjects);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [projectToEdit, setProjectToEdit] = useState<Project | undefined>(undefined);
+  const navigate = useNavigate(); // اضافه شد
 
-  const handleOpenProject = (id: number) => {
-    console.log("Open project with id:", id);
+
+   const handleOpenProject = (id: number) => {
+    // ناوبری به ProjectTasks با آیدی پروژه
+    navigate(`/projects/${id}`);
   };
 
   const handleEditProject = (project: Project) => {

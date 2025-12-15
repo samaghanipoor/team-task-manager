@@ -7,11 +7,13 @@ import Users from "./pages/Users";
 import AuthLogin from "./pages/AuthLogin";
 import AuthRegister from "./pages/AuthRegister";
 
+
+
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Dashboard / Projects */}
+        
         <Route
           path="/"
           element={
@@ -21,7 +23,7 @@ function App() {
           }
         />
 
-        {/* Tasks of a project */}
+      
         <Route
           path="/projects/:id"
           element={
@@ -31,7 +33,7 @@ function App() {
           }
         />
 
-        {/* Users management */}
+        
         <Route
           path="/users"
           element={
@@ -41,7 +43,8 @@ function App() {
           }
         />
 
-        {/* Auth pages */}
+      
+
         <Route path="/login" element={<AuthLogin />} />
         <Route path="/register" element={<AuthRegister />} />
       </Routes>
