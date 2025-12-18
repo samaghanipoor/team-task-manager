@@ -4,6 +4,7 @@ interface ButtonProps {
   children: React.ReactNode;
   onClick?: () => void;
   type?: "button" | "submit";
+  className?: string; // اضافه کردن className به props
 }
 
 const Button: React.FC<ButtonProps> = ({ children, onClick, type = "button" }) => {
@@ -11,11 +12,12 @@ const Button: React.FC<ButtonProps> = ({ children, onClick, type = "button" }) =
     <button
       type={type}
       onClick={onClick}
-      className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 transition"
+      className="px-3 py-1 text-sm bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
     >
       {children}
     </button>
   );
 };
+
 
 export default Button;
