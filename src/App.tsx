@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-
+import { Toaster } from "react-hot-toast";
 import MainLayout from "./layouts/MainLayout";
 import ProjectsList from "./pages/ProjectsList";
 import ProjectTasks from "./pages/ProjectTasks";
@@ -12,8 +12,11 @@ import AuthRegister from "./pages/AuthRegister";
 function App() {
   return (
     <BrowserRouter>
+      <Toaster
+        position="top-right"
+        toastOptions={{ duration: 5000 }}
+      />
       <Routes>
-        
         <Route
           path="/"
           element={
@@ -22,8 +25,6 @@ function App() {
             </MainLayout>
           }
         />
-
-      
         <Route
           path="/projects/:id"
           element={
@@ -32,8 +33,6 @@ function App() {
             </MainLayout>
           }
         />
-
-        
         <Route
           path="/users"
           element={
@@ -42,9 +41,6 @@ function App() {
             </MainLayout>
           }
         />
-
-      
-
         <Route path="/login" element={<AuthLogin />} />
         <Route path="/register" element={<AuthRegister />} />
       </Routes>

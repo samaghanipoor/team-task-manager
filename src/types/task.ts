@@ -1,5 +1,3 @@
-
-
 export type TaskStatus = "todo" | "doing" | "done";
 export type TaskPriority = "low" | "medium" | "high";
 
@@ -11,4 +9,5 @@ export interface Task {
   priority: TaskPriority;
   assignee: string;
   dueDate: string;
+  notified?: boolean;
 }
