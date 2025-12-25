@@ -7,7 +7,7 @@ import { TaskForm } from "../components/task/TaskForm";
 import { TaskFilters } from "../components/task/TaskFilters";
 
 import type { Task } from "../types/task";
-import { checkDueTasks } from "../services/notificationService";
+import toast from "react-hot-toast";
 
 type TaskFiltersState = {
   status?: "todo" | "doing" | "done";
@@ -20,43 +20,35 @@ type TaskFiltersState = {
 export default function ProjectDetails() {
   const { projectId } = useParams();
 
-  // ✅ Function initializer برای مقدار اولیه tasks
-  const [tasks, setTasks] = useState<Task[]>(() => [
-    {
-      id: "1",
-      title: "Design UI",
-      description: "Create mockups for dashboard",
-      status: "todo",
-      priority: "high",
-      assignee: "Ali",
-      dueDate: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(), // 2 ساعت بعد
-    },
-    {
-      id: "2",
-      title: "Set up Redux",
-      description: "Configure store and slices",
-      status: "doing",
-      priority: "medium",
-      assignee: "Sara",
-      dueDate: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(), // 1 ساعت گذشته
-    },
-  ]);
+  const [tasks, setTasks] = useState<Task[]>(() => {
+    const now = Date.now();
+    return [
+      {
+        id: "1",
+        title: "Past Task",
+        description: "Overdue task",
+        status: "todo",
+        priority: "high",
+        assignee: "Ali",
+        dueDate: new Date(now - 1 * 60 * 60 * 1000).toISOString(), // 1 ساعت گذشته
+      },
+      {
+        id: "2",
+        title: "Soon Task",
+        description: "Due soon task",
+        status: "todo",
+        priority: "medium",
+        assignee: "Sara",
+        dueDate: new Date(now + 2 * 60 * 60 * 1000).toISOString(), // 2 ساعت بعد
+      },
+    ];
+  });
 
   const [showForm, setShowForm] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [filters, setFilters] = useState<TaskFiltersState>({});
 
-  // 🔔 Trigger notifications when tasks change
-  useEffect(() => {
-    const hasUnnotified = tasks.some(task => !task.notified);
-    if (hasUnnotified) {
-      checkDueTasks(setTasks);
-    }
-  }, [tasks]);
-  
-  
-
-  const assignees = Array.from(new Set(tasks.map((t) => t.assignee)));
+  const assignees = Array.from(new Set(tasks.map(t => t.assignee)));
 
   // ------------------
   // CRUD Handlers
@@ -67,7 +59,7 @@ export default function ProjectDetails() {
   };
 
   const handleEdit = (taskId: string) => {
-    const task = tasks.find((t) => t.id === taskId);
+    const task = tasks.find(t => t.id === taskId);
     if (task) {
       setEditingTask(task);
       setShowForm(true);
@@ -75,12 +67,12 @@ export default function ProjectDetails() {
   };
 
   const handleDelete = (taskId: string) => {
-    setTasks((prev) => prev.filter((t) => t.id !== taskId));
+    setTasks(prev => prev.filter(t => t.id !== taskId));
   };
 
   const handleChangeStatus = (taskId: string) => {
-    setTasks((prev) =>
-      prev.map((t) =>
+    setTasks(prev =>
+      prev.map(t =>
         t.id === taskId
           ? {
               ...t,
@@ -98,15 +90,15 @@ export default function ProjectDetails() {
 
   const handleSave = (taskData: Omit<Task, "id">) => {
     if (editingTask) {
-      setTasks((prev) =>
-        prev.map((t) => (t.id === editingTask.id ? { ...editingTask, ...taskData } : t))
+      setTasks(prev =>
+        prev.map(t => (t.id === editingTask.id ? { ...editingTask, ...taskData } : t))
       );
     } else {
       const newTask: Task = {
         ...taskData,
-        id: (tasks.length + 1).toString(),
+        id: Date.now().toString(),
       };
-      setTasks((prev) => [...prev, newTask]);
+      setTasks(prev => [...prev, newTask]);
     }
     setShowForm(false);
   };
@@ -114,7 +106,7 @@ export default function ProjectDetails() {
   // ------------------
   // Filtering
   // ------------------
-  const filteredTasks = tasks.filter((task) => {
+  const filteredTasks = tasks.filter(task => {
     let keep = true;
     if (filters.status) keep = keep && task.status === filters.status;
     if (filters.priority) keep = keep && task.priority === filters.priority;
@@ -124,21 +116,34 @@ export default function ProjectDetails() {
     return keep;
   });
 
+  // ------------------
+  // Notifications (toast)
+  // ------------------
+  useEffect(() => {
+    const now = Date.now();
+    tasks.forEach(task => {
+      if (task.status === "done") return;
+
+      const dueTime = new Date(task.dueDate).getTime();
+      const diff = dueTime - now;
+
+      if (diff < 0) {
+        toast.error(`⚠️ Task "${task.title}" is overdue!`);
+      } else if (diff <= 48 * 60 * 60 * 1000) {
+        toast(`⏰ "${task.title}" is due soon`);
+      }
+    });
+  }, [tasks]);
+
   return (
     <div className="p-6 space-y-6">
-      {/* Project Header */}
-      <header className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Project #{projectId}</h1>
-          <p className="text-sm text-muted-foreground">Project description goes here</p>
-        </div>
+      <header className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold">Project #{projectId}</h1>
         <Button onClick={handleAdd}>+ Add Task</Button>
       </header>
 
-      {/* Task Filters */}
       <TaskFilters assignees={assignees} onFilterChange={setFilters} />
 
-      {/* Task Form */}
       {showForm && (
         <TaskForm
           assignees={assignees}
@@ -148,7 +153,6 @@ export default function ProjectDetails() {
         />
       )}
 
-      {/* Task List */}
       <TaskList
         tasks={filteredTasks}
         onEdit={handleEdit}
@@ -158,3 +162,4 @@ export default function ProjectDetails() {
     </div>
   );
 }
+
